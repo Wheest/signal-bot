@@ -1,0 +1,49 @@
+services:
+  signald:
+    # image: registry.gitlab.com/signald/signald:latest # ideally should just be an image pull but see issue in Dockerfile.signald
+    build:
+      context: signald
+
+      args:
+        SIGNAL_CLI_VERSION: "0.12.8"  # see https://github.com/AsamK/signal-cli/releases
+    volumes:
+      - ./config/signald-config/signald-sock:/signald-sock
+      - ./config/signald-config/.config:/root/.config
+      - shared_tmpfs:/shared_tmpfs
+    restart: on-failure
+    env_file:
+      - ./config/phone.env
+  bot:
+    build:
+      context: bot
+    volumes:
+      - ./config/signald-config/signald-sock/signald.sock:/signal.d/signald.sock  # Mount the signald socket from signald service
+      - ./bot/src:/app/src # TODO this is for dev only
+      - ./config/allowlist.json:/app/allowlist.json
+      - ./config/chat_state/:/app/state/
+      - ./config/usernames.json/:/app/usernames.json
+      - ./config/minecraft.json/:/app/minecraft.json
+      - shared_tmpfs:/shared_tmpfs
+    env_file:
+      - ./config/phone.env
+      - ./config/bot.env
+      - ./config/aws.env
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      signald:
+        condition: service_healthy
+  suno-api: # see https://github.com/gcui-art/suno-api/
+    build:
+      context: suno-api
+      args:
+        SUNO_COOKIE: ${SUNO_COOKIE}
+    volumes:
+      - ./public:/app/public
+volumes:
+  shared_tmpfs: # for images and audio
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: 'size=64m'

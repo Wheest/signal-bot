@@ -1,0 +1,16 @@
+.DS_Store
+.idea
+*.log
+tmp/
+__pycache__/
+
+
+config/signald-config/.config/*
+config/signald-config/signald-sock/*
+config/chat_state/*
+
+config/usernames.json
+config/allowlist.json
+config/minecraft.json
+
+*.env

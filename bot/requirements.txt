@@ -1,0 +1,4 @@
+openai==1.10.0
+semaphore-bot==0.17.0
+requests
+boto3
