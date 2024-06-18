@@ -41,7 +41,11 @@ class SunoAPI:
             url, json=payload, headers={"Content-Type": "application/json"}
         )
         data = response.json()
+        print("suno data:", data)
+        if "error" in data:
+            raise Exception(data["error"])
         ids = f"{data[0]['id']},{data[1]['id']}"
+
         print(f"ids: {ids}")
         for _ in range(60):
             data = SunoAPI.get_audio_information(ids)

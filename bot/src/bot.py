@@ -353,12 +353,18 @@ class MyBot:
         msg = ctx.message.get_body()
         msg = self.remove_commands(msg)
 
-        url1, url2 = SunoAPI.generate_audio_by_prompt(
-            {"prompt": msg, "make_instrumental": False, "wait_audio": True}
-        )
+        await ctx.message.typing_started()
+        try:
+            url1, url2 = SunoAPI.generate_audio_by_prompt(
+                {"prompt": msg, "make_instrumental": False, "wait_audio": True}
+            )
+        except Exception as e:
+            await self.system_message(ctx, f"API call failed {e}")
+            return
         await ctx.message.reply(f"Audio 1: {url1}")
         await ctx.message.reply(f"Audio 2: {url2}")
         await self.suno_limits_fn(ctx)
+        await ctx.message.typing_stopped()
 
     async def suno_custom_fn(self, ctx):
         msg = ctx.message.get_body()
