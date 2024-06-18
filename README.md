@@ -17,8 +17,23 @@ Note this repo is not an official product of the Signal Technology Foundation.
 
 ## Design
 
+TODO discuss design
 
 ## Setup
+
+### Getting Docker
+
+Since this project uses Docker, you will need to have Docker installed.
+
+You should use the official Docker installation instructions [for your platform](https://docs.docker.com/engine/install/)
+
+### External dependencies
+
+I've made `suno-ai` music generation an optional dependency.
+I have a forked version of a third party API, which you should `git clone https://github.com/Wheest/suno-api/` into the same directory as this repo.
+If you don't want to use it, comment out that service in the `docker-compose.yml` file.
+
+### Variable config
 
 To use the bot, you need to have a phone number that the bot can use to send and receive messages.
 We then need to set up a Signal account for the bot to use.
@@ -48,7 +63,7 @@ First run just the signald container, then attach to, executing the setup script
 
 ``` sh
 docker compose up -d signald --build
-docker exec -it signal-bot-docker-signald-1 /bin/sh -c "/signald_setup.sh"
+docker exec -it signal-bot-signald-1 /bin/sh -c "/signald_setup.sh"
 ```
 
 You will need to enter a captcha, which you complete online ([see here for details](https://signald.org/articles/captcha/)), and then fill in a 2FA code, which will be sent to the phone number you provided.
@@ -60,6 +75,9 @@ docker compose up
 
 If everything works, you could be able to test your bot by messaging it on Signal.
 The `/echo` or `/help` commands have minimal dependencies.
+If you register the number on another machine, then the  original registration will be invalidated.
+In this case, delete everything in `config/signald-config/` run the setup again.
+
 
 
 Send a message to your test number:
